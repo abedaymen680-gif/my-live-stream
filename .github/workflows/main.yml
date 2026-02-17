@@ -1,7 +1,7 @@
 name: Facebook Live Stream
 
 on:
-  workflow_dispatch: # يتيح لك تشغيل البث يدوياً بضغطة زر
+  workflow_dispatch:
 
 jobs:
   stream:
@@ -12,6 +12,8 @@ jobs:
 
       - name: Start Streaming
         run: |
-          ffmpeg -re -i "http://jup20.cc:2130/live/859190032911306/86046227/125.ts" \
-          -c copy -f flv "rtmps://live-api-s.facebook.com:443/rtmp/FB-907604004962838-0-Ab7JD1tTZvD9Mzw-W8JDnYVO"
+          # استخدمنا خيارات إضافية لضمان قراءة الـ m3u8 بدون تقطيع
+          ffmpeg -re -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/430933.m3u8" \
+          -c:v copy -c:a aac -strict experimental -f flv \
+          "rtmps://live-api-s.facebook.com:443/rtmp/FB-907604004962838-0-Ab7JD1tTZvD9Mzw-W8JDnYVO"
           
