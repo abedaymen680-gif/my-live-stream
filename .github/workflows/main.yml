@@ -1,25 +1,21 @@
-name: 5 Minute Video Grabber
+name: Send Saved Video to Telegram
 
 on:
   workflow_dispatch:
 
 jobs:
-  download:
+  telegram_upload:
     runs-on: ubuntu-latest
     steps:
-      - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
-
-      - name: Download 5 Minutes
-        run: |
-          # سيقوم بتحميل 5 دقائق (300 ثانية) وحفظها باسم test_clip.mp4
-          # أضفنا User Agent لضمان عدم حظر السيرفر للتحميل
-          ffmpeg -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/431637.m3u8" \
-          -t 300 -c copy -user_agent "Mozilla/5.0" test_clip.mp4
-
-      - name: Upload Video as Artifact
-        uses: actions/upload-artifact@v4
+      # 1. سحب الملف الذي حفظناه سابقاً في GitHub
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
         with:
           name: my-5-minute-video
-          path: test_clip.mp4
+
+      # 2. إرساله إلى تليجرام باستخدام معلوماتك
+      - name: Send Video File
+        run: |
+          curl -v -F "video=@test_clip.mp4" \
+          "https://api.telegram.org/bot8553237214:AAGnvhfyXa-B5Wkm3g_VQTRVbbr0ShyYM0U/sendVideo?chat_id=6849625315"
           
