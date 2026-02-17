@@ -1,34 +1,25 @@
-name: Split and Send Saved Video
+name: Quick 1 Minute IPTV
 
 on:
   workflow_dispatch:
 
 jobs:
-  split_process:
+  one_minute_job:
     runs-on: ubuntu-latest
     steps:
-      # 1. تحميل الملف المخزن في GitHub
-      - name: Get Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: my-5-minute-video
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      # 2. تقسيم الفيديو تقنياً (بدون إعادة ترميز ليكون سريعاً جداً)
-      - name: Split Video
+      - name: Download 1 Minute
         run: |
-          # تقسيم الملف إلى جزءين (كل جزء 150 ثانية)
-          # نستخدم -c copy لكي تتم العملية في ثانية واحدة فقط
-          ffmpeg -i test_clip.mp4 -t 150 -c copy part1.mp4
-          ffmpeg -i test_clip.mp4 -ss 150 -c copy part2.mp4
+          # هنا تم ضبط الوقت على 60 ثانية فقط (-t 60)
+          ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 \
+          -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/431637.m3u8" \
+          -t 60 -c copy -user_agent "Mozilla/5.0" minute_video.mp4
 
-      # 3. إرسال الأجزاء إلى تليجرام
-      - name: Send Parts to Telegram
+      - name: Send to Telegram
         run: |
-          # إرسال الجزء الأول
-          curl -v -F "video=@part1.mp4" -F "caption=الجزء الأول (0:00 - 2:30)" \
-          "https://api.telegram.org/bot8553237214:AAGnvhfyXa-B5Wkm3g_VQTRVbbr0ShyYM0U/sendVideo?chat_id=6849625315"
-          
-          # إرسال الجزء الثاني
-          curl -v -F "video=@part2.mp4" -F "caption=الجزء الثاني (2:30 - 5:00)" \
+          # إرسال الملف (سيكون حجمه صغيراً ولن يرفضه تليجرام)
+          curl -v -F "video=@minute_video.mp4" -F "caption=فيديو الدقيقة الواحدة 🚀" \
           "https://api.telegram.org/bot8553237214:AAGnvhfyXa-B5Wkm3g_VQTRVbbr0ShyYM0U/sendVideo?chat_id=6849625315"
           
