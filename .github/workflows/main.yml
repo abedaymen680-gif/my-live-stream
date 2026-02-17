@@ -1,0 +1,17 @@
+name: Facebook Live Stream
+
+on:
+  workflow_dispatch: # يتيح لك تشغيل البث يدوياً بضغطة زر
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Start Streaming
+        run: |
+          ffmpeg -re -i "http://jup20.cc:2130/live/859190032911306/86046227/125.ts" \
+          -c copy -f flv "rtmps://live-api-s.facebook.com:443/rtmp/FB-907604004962838-0-Ab7JD1tTZvD9Mzw-W8JDnYVO"
+          
