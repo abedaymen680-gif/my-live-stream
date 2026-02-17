@@ -1,24 +1,25 @@
-name: IPTV to Telegram Express
+name: Quick 1 Minute - New Link
 
 on:
   workflow_dispatch:
 
 jobs:
-  download_and_send:
+  download_new_link:
     runs-on: ubuntu-latest
     steps:
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Download 5 Minutes from IPTV
+      - name: Download 1 Minute from New Link
         run: |
-          # تحميل 5 دقائق بجودة عالية مع تمويه السيرفر
-          ffmpeg -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/431637.m3u8" \
-          -t 300 -c copy -user_agent "Mozilla/5.0" final_video.mp4
+          # التحميل من الرابط الجديد لمدة 60 ثانية
+          ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 \
+          -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/430896.m3u8" \
+          -t 60 -c copy -bsf:a aac_adtstoasc -user_agent "Mozilla/5.0" new_minute.mp4
 
       - name: Send to Telegram
         run: |
-          # إرسال الملف فوراً بعد انتهاء التحميل
-          curl -v -F "video=@final_video.mp4" \
+          # إرسال الفيديو الجديد إلى حسابك
+          curl -v -F "video=@new_minute.mp4" -F "caption=فيديو الدقيقة الواحدة (الرابط الجديد) 🎬" \
           "https://api.telegram.org/bot8553237214:AAGnvhfyXa-B5Wkm3g_VQTRVbbr0ShyYM0U/sendVideo?chat_id=6849625315"
           
