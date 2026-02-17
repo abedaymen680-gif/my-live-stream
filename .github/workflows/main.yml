@@ -1,19 +1,25 @@
-name: Facebook Live Stream
+name: 5 Minute Video Grabber
 
 on:
   workflow_dispatch:
 
 jobs:
-  stream:
+  download:
     runs-on: ubuntu-latest
     steps:
       - name: Install FFmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Start Streaming
+      - name: Download 5 Minutes
         run: |
-          # استخدمنا خيارات إضافية لضمان قراءة الـ m3u8 بدون تقطيع
-          ffmpeg -re -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/430933.m3u8" \
-          -c:v copy -c:a aac -strict experimental -f flv \
-          "rtmps://live-api-s.facebook.com:443/rtmp/FB-907604004962838-0-Ab7JD1tTZvD9Mzw-W8JDnYVO"
+          # سيقوم بتحميل 5 دقائق (300 ثانية) وحفظها باسم test_clip.mp4
+          # أضفنا User Agent لضمان عدم حظر السيرفر للتحميل
+          ffmpeg -i "http://5-host.xyz:8080/live/177716153252/17laOe555B/431637.m3u8" \
+          -t 300 -c copy -user_agent "Mozilla/5.0" test_clip.mp4
+
+      - name: Upload Video as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-5-minute-video
+          path: test_clip.mp4
           
